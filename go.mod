@@ -1,3 +1,3 @@
-module github.com/AlvinTsou/WebDev/01
+module github.com/AlvinTsou/WebDev
 
 go 1.21.0
