@@ -11,7 +11,7 @@ import (
 	"github.com/AlvinTsou/WebDev/pkg/models"
 )
 
-//var functions = template.FuncMap{}
+var functions = template.FuncMap{}
 
 var app *config.AppConfig
 
@@ -40,10 +40,11 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData)
 	   	} */
 	// *Old
 
+	log.Println("Ready to get template from cache")
 	// get request template from cache
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Could not get template from template cache")
+		log.Fatal("Could not get template from template_cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -56,7 +57,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData)
 	// render the template
 	_, err := buf.WriteTo(w)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error writing template to browser", err)
 	}
 
 	/* 1st solution
@@ -73,7 +74,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData)
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	// myCache := make(map[string]*template.Template))
-	log.Println("Starting using 2nd templates loading...")
+	//log.Println("Starting using 2nd templates loading...")
 	myCache := map[string]*template.Template{}
 
 	// get all of the files named *page.tmpl form in the template directory ./templates
