@@ -10,15 +10,30 @@ import (
 	"github.com/AlvinTsou/WebDev/pkg/config"
 	"github.com/AlvinTsou/WebDev/pkg/handlers"
 	"github.com/AlvinTsou/WebDev/pkg/render"
+	"github.com/alexedwards/scs/v2"
 )
 
 // const cant be changed
 const portNumber = ":8080"
 
+var app config.AppConfig
+var session *scs.SessionManager
+
 // main application function
 func main() {
 	// using 2nd templates loading with getring the template cache from config.go
 	var app config.AppConfig
+
+	//change this to true when in production
+	app.InProduction = false
+
+	session = scs.New()
+	session.Lifetime = 24 * 60 * 60 // 24 hours
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction // change to true when https
+
+	app.Session = session
 
 	tc, err := render.CreateTemplateCache()
 	if err != nil {

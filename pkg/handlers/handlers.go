@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/AlvinTsou/WebDev/pkg/config"
@@ -30,6 +31,10 @@ func NewHandlers(r *Repository) {
 
 // Home is a function that handles the home route
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	remoteIP := r.RemoteAddr
+	fmt.Println("RemoteIP: ", remoteIP)
+	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+
 	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
@@ -38,6 +43,10 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	// perform some logic and send data to the template
 	stringMap := make(map[string]string)
 	stringMap["test"] = "Hello, again."
+
+	remoteIP := m.App.Session.GetString(r.Context(), "remote_ip")
+	fmt.Println("Get from Session RemoteIP: ", remoteIP)
+	stringMap["remote_ip"] = remoteIP
 
 	// send data to the template
 	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{

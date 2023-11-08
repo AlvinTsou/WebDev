@@ -40,7 +40,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData)
 	   	} */
 	// *Old
 
-	log.Println("Ready to get template from cache")
+	//log.Println("Ready to get template from cache")
 	// get request template from cache
 	t, ok := tc[tmpl]
 	if !ok {
