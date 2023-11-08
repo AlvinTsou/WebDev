@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+
 	//"html/template"
 	"net/http"
 
 	"github.com/AlvinTsou/WebDev/pkg/config"
 	"github.com/AlvinTsou/WebDev/pkg/handlers"
+	"github.com/AlvinTsou/WebDev/pkg/rander"
 )
 
 // const cant be changed
