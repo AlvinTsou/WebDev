@@ -1,25 +1,90 @@
 package render
 
 import (
-	"fmt"
+	"bytes"
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
 // RenderTemplate renders templates using html/template
-func RenderTemplateTEST(w http.ResponseWriter, tmpl string) {
-	//if use base.layout.tmpl, then need to increase string "./templates/base.layout.tmpl" after +tmpl
+func RenderTemplate(w http.ResponseWriter, tmpl string) {
+	// create a template cache
+	tc, err := createTemplateCache()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// get request template from cache
+	t, ok := tc[tmpl]
+	if !ok {
+		log.Fatal(err)
+	}
+
+	buf := new(bytes.Buffer)
+
+	err = t.Execute(buf, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// render the template
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	/* 1st solution
+	// if use base.layout.tmpl, then need to increase string "./templates/base.layout.tmpl" after +tmpl
 	parsedTemplate, _ := template.ParseFiles("./templates/"+tmpl, "./templates/base.layout.tmpl")
-	//parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+	// parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
 	err := parsedTemplate.Execute(w, nil)
 	if err != nil {
 		fmt.Println("error parsing templates:", err)
 		return
 	}
-
+	*/
 }
 
+func createTemplateCache() (map[string]*template.Template, error) {
+	// myCache := make(map[string]*template.Template))
+	log.Println("Starting using 2nd templates loading...")
+	myCache := map[string]*template.Template{}
+
+	// get all of the files named *page.tmpl form in the template directory ./templates
+	pages, err := filepath.Glob("./templates/*.page.tmpl")
+	if err != nil {
+		return myCache, err
+	}
+
+	//  range through the all pages ending with *page.tmpl one-by-one
+	for _, page := range pages {
+		name := filepath.Base(page)
+		ts, err := template.New(name).ParseFiles(page)
+		if err != nil {
+			return myCache, err
+		}
+
+		matches, err := filepath.Glob("./templates/*.layout.tmpl")
+		if err != nil {
+			return myCache, err
+		}
+
+		if len(matches) > 0 {
+			ts, err = ts.ParseGlob("./templates/*.layout.tmpl")
+			if err != nil {
+				return myCache, err
+			}
+		}
+		myCache[name] = ts
+	}
+
+	return myCache, nil
+}
+
+/*
+// 1st solution
 var tc = make(map[string]*template.Template)
 
 func RenderTemplate(w http.ResponseWriter, t string) {
@@ -54,7 +119,7 @@ func createTemplateCache(t string) error {
 		fmt.Sprintf("./templates/%s", t), "./templates/base.layout.tmpl",
 	}
 
-	//parse the template files
+	//parse those template files
 	tmpl, err := template.ParseFiles(templates...)
 	if err != nil {
 		return err
@@ -65,3 +130,4 @@ func createTemplateCache(t string) error {
 	return nil
 
 }
+*/
