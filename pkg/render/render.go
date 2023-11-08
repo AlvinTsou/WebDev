@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/AlvinTsou/WebDev/pkg/config"
+	"github.com/AlvinTsou/WebDev/pkg/handlers"
 )
 
 //var functions = template.FuncMap{}
@@ -19,9 +20,14 @@ func NewTemplates(a *config.AppConfig) {
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// get the template cache from the app config
-	tc := app.TemplatesCache
+func RenderTemplate(w http.ResponseWriter, tmpl string, td handlers.TemplateData) {
+	var tc map[string]*template.Template
+	if app.UseCache {
+		// get the template cache from the app config
+		tc = app.TemplatesCache
+	} else {
+		tc, _ = CreateTemplateCache()
+	}
 
 	// create a template cache
 	/* 	tc, err := CreateTemplateCache()
