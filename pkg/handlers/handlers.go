@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/AlvinTsou/WebDev/pkg/config"
+	"github.com/AlvinTsou/WebDev/pkg/models"
 	"github.com/AlvinTsou/WebDev/pkg/render"
 )
 
@@ -29,7 +30,7 @@ func NewHandlers(r *Repository) {
 
 // Home is a function that handles the home route
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.tmpl", &TemplateData{})
+	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is a function that handles the about route
@@ -39,6 +40,7 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap["test"] = "Hello, again."
 
 	// send data to the template
-	render.RenderTemplate(w, "about.page.tmpl", &TemplateData{})
-		StringMap:= stringMap,
+	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }
